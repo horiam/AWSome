@@ -1,0 +1,448 @@
+	{
+	  "AWSTemplateFormatVersion": "2010-09-09",
+	  "Resources": {
+	    "appB": {
+	      "Type": "AWS::ElasticBeanstalk::Application",
+	      "Properties": {}
+	    },
+	    "appA": {
+	      "Type": "AWS::ElasticBeanstalk::Application",
+	      "Properties": {}
+	    },
+	    "versionFirstRelease727": {
+	      "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
+	      "Properties": {
+		"ApplicationName": {
+		  "Ref": "appB"	
+		},
+		"SourceBundle": {
+		  "S3Bucket": "TODO put your S3 bucket here",
+		  "S3Key": "app-B-0.1.0.jar"
+		}
+	      }
+	    },
+	    "versionFirstRelease728": {
+	      "Type": "AWS::ElasticBeanstalk::ApplicationVersion",
+	      "Properties": {
+		"ApplicationName": {
+		  "Ref": "appA"
+		},
+		"SourceBundle": {
+		  "S3Bucket": "TODO put your S3 bucket here",
+		  "S3Key": "app-A-0.1.0.jar"
+		}
+	      }
+	    },
+	    "envappBenv53": {
+	      "DependsOn": [
+		"appB",
+		"ebBsg",
+		"ingress37",
+		"ingress38"
+	      ],
+	      "Type": "AWS::ElasticBeanstalk::Environment",
+	      "Properties": {
+		"ApplicationName": {
+		  "Ref": "appB"
+		},
+		"SolutionStackName": "64bit Amazon Linux 2016.03 v2.1.3 running Java 8",
+		"VersionLabel": {
+		  "Ref": "versionFirstRelease727"
+		},
+		"Tier": {
+		  "Name": "WebServer",
+		  "Type": "Standard",
+		  "Version": " "
+		},
+		"OptionSettings": [
+		  {
+		    "Namespace": "aws:autoscaling:launchconfiguration",
+		    "OptionName": "EC2KeyName",
+		    "Value": "KeyPair"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:launchconfiguration",
+		    "OptionName": "IamInstanceProfile",
+		    "Value": "aws-elasticbeanstalk-ec2-role"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:launchconfiguration",
+		    "OptionName": "ImageId",
+		    "Value": "ami-9cd8f0ff"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:launchconfiguration",
+		    "OptionName": "SecurityGroups",
+		    "Value": { "Ref" : "ebBsg" }
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:trigger",
+		    "OptionName": "UpperThreshold",
+		    "Value": "6000000"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+		    "OptionName": "MaxBatchSize",
+		    "Value": "1"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+		    "OptionName": "MinInstancesInService",
+		    "Value": "1"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+		    "OptionName": "RollingUpdateEnabled",
+		    "Value": "true"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+		    "OptionName": "RollingUpdateType",
+		    "Value": "Health"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "GRADLE_HOME",
+		    "Value": "/usr/local/gradle"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "JAVA_HOME",
+		    "Value": "/usr/lib/jvm/java"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "CLOUD_AWS_STACK_AUTO",
+		    "Value": "false"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "CLOUD_AWS_STACK_NAME",
+		    "Value": {"Ref" : "AWS::StackName"}
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "M2",
+		    "Value": "/usr/local/apache-maven/bin"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "M2_HOME",
+		    "Value": "/usr/local/apache-maven"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:command",
+		    "OptionName": "BatchSize",
+		    "Value": "30"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:command",
+		    "OptionName": "DeploymentPolicy",
+		    "Value": "Rolling"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:environment",
+		    "OptionName": "ServiceRole",
+		    "Value": "aws-elasticbeanstalk-service-role"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:healthreporting:system",
+		    "OptionName": "SystemType",
+		    "Value": "enhanced"
+		  },
+		  {
+		    "Namespace": "aws:elb:healthcheck",
+		    "OptionName": "Interval",
+		    "Value": "10"
+		  },
+		  {
+		    "Namespace": "aws:elb:loadbalancer",
+		    "OptionName": "CrossZone",
+		    "Value": "true"
+		  },
+		  {
+		    "Namespace": "aws:elb:loadbalancer",
+		    "OptionName": "LoadBalancerHTTPPort",
+		    "Value": "80"
+		  },
+		  {
+		    "Namespace": "aws:elb:policies",
+		    "OptionName": "ConnectionDrainingEnabled",
+		    "Value": "true"
+		  }
+		]
+	      }
+	    },
+	    "envappAenv54": {
+	      "DependsOn": [
+		"appA",
+		"ebAsg",
+		"ingress37",
+		"ingress38"
+	      ],
+	      "Type": "AWS::ElasticBeanstalk::Environment",
+	      "Properties": {
+		"ApplicationName": {
+		  "Ref": "appA"
+		},
+		"SolutionStackName": "64bit Amazon Linux 2016.03 v2.1.3 running Java 8",
+		"VersionLabel": {
+		  "Ref": "versionFirstRelease728"
+		},
+		"Tier": {
+		  "Name": "WebServer",
+		  "Type": "Standard",
+		  "Version": " "
+		},
+		"OptionSettings": [
+		  {
+		    "Namespace": "aws:autoscaling:launchconfiguration",
+		    "OptionName": "EC2KeyName",
+		    "Value": "KeyPair"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:launchconfiguration",
+		    "OptionName": "IamInstanceProfile",
+		    "Value": "aws-elasticbeanstalk-ec2-role"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:launchconfiguration",
+		    "OptionName": "ImageId",
+		    "Value": "ami-9cd8f0ff"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:launchconfiguration",
+		    "OptionName": "SecurityGroups",
+		    "Value": { "Ref" : "ebAsg" }
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:trigger",
+		    "OptionName": "UpperThreshold",
+		    "Value": "6000000"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+		    "OptionName": "MaxBatchSize",
+		    "Value": "1"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+		    "OptionName": "MinInstancesInService",
+		    "Value": "1"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+		    "OptionName": "RollingUpdateEnabled",
+		    "Value": "true"
+		  },
+		  {
+		    "Namespace": "aws:autoscaling:updatepolicy:rollingupdate",
+		    "OptionName": "RollingUpdateType",
+		    "Value": "Health"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "GRADLE_HOME",
+		    "Value": "/usr/local/gradle"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "JAVA_HOME",
+		    "Value": "/usr/lib/jvm/java"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "CLOUD_AWS_STACK_AUTO",
+		    "Value": "false"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "CLOUD_AWS_STACK_NAME",
+		    "Value": {"Ref" : "AWS::StackName"}
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "M2",
+		    "Value": "/usr/local/apache-maven/bin"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:application:environment",
+		    "OptionName": "M2_HOME",
+		    "Value": "/usr/local/apache-maven"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:command",
+		    "OptionName": "BatchSize",
+		    "Value": "30"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:command",
+		    "OptionName": "DeploymentPolicy",
+		    "Value": "Rolling"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:environment",
+		    "OptionName": "ServiceRole",
+		    "Value": "aws-elasticbeanstalk-service-role"
+		  },
+		  {
+		    "Namespace": "aws:elasticbeanstalk:healthreporting:system",
+		    "OptionName": "SystemType",
+		    "Value": "enhanced"
+		  },
+		  {
+		    "Namespace": "aws:elb:healthcheck",
+		    "OptionName": "Interval",
+		    "Value": "10"
+		  },
+		  {
+		    "Namespace": "aws:elb:loadbalancer",
+		    "OptionName": "CrossZone",
+		    "Value": "true"
+		  },
+		  {
+		    "Namespace": "aws:elb:loadbalancer",
+		    "OptionName": "LoadBalancerHTTPPort",
+		    "Value": "80"
+		  },
+		  {
+		    "Namespace": "aws:elb:policies",
+		    "OptionName": "ConnectionDrainingEnabled",
+		    "Value": "true"
+		  }
+		]
+	      }
+	    },
+	    "rdsB": {
+	      "Type": "AWS::RDS::DBInstance",
+	      "Properties": {
+		"AllocatedStorage": "5",
+		"AllowMajorVersionUpgrade": "false",
+		"AutoMinorVersionUpgrade": "true",
+		"DBInstanceClass": "db.t2.micro",
+		"Port": "3306",
+		"StorageType": "gp2",
+		"BackupRetentionPeriod": "0",
+		"MasterUsername": "development",
+		"MasterUserPassword": "password",
+		"PreferredBackupWindow": "15:16-15:46",
+		"PreferredMaintenanceWindow": "wed:17:57-wed:18:27",
+		"DBName": "dbB",
+		"Engine": "mysql",
+		"EngineVersion": "5.6.27",
+		"LicenseModel": "general-public-license",
+		"PubliclyAccessible" : "false",
+		"VPCSecurityGroups": [
+		  {
+		    "Fn::GetAtt" : ["rdsBsg", "GroupId" ]
+		  }
+		],
+		"Tags": [
+		  {
+		    "Key": "workload-type",
+		    "Value": "other"
+		  }
+		]
+	      }
+	    },
+	    "rdsA": {
+	      "Type": "AWS::RDS::DBInstance",
+	      "Properties": {
+		"AllocatedStorage": "5",
+		"AllowMajorVersionUpgrade": "false",
+		"AutoMinorVersionUpgrade": "true",
+		"DBInstanceClass": "db.t2.micro",
+		"Port": "3306",
+		"StorageType": "gp2",
+		"BackupRetentionPeriod": "0",
+		"MasterUsername": "development",
+		"MasterUserPassword": "password",
+		"PreferredBackupWindow": "19:29-19:59",
+		"PreferredMaintenanceWindow": "tue:12:23-tue:12:53",
+		"DBName": "dbA",
+		"Engine": "mysql",
+		"EngineVersion": "5.6.27",
+		"LicenseModel": "general-public-license",
+		"PubliclyAccessible" : "false",
+		"VPCSecurityGroups": [
+		  {
+		    "Fn::GetAtt" : ["rdsAsg", "GroupId" ]
+		  }
+		],
+		"Tags": [
+		  {
+		    "Key": "workload-type",
+		    "Value": "other"
+		  }
+		]
+	      }
+	    },
+	    "QueueA": {
+	      "Type": "AWS::SQS::Queue",
+	      "Properties": {
+		"DelaySeconds": "0",
+		"MaximumMessageSize": "262144",
+		"MessageRetentionPeriod": "345600",
+		"ReceiveMessageWaitTimeSeconds": "0",
+		"VisibilityTimeout": "30"
+	      }
+	    },
+	    "QueueB": {
+	      "Type": "AWS::SQS::Queue",
+	      "Properties": {
+		"DelaySeconds": "0",
+		"MaximumMessageSize": "262144",
+		"MessageRetentionPeriod": "345600",
+		"ReceiveMessageWaitTimeSeconds": "0",
+		"VisibilityTimeout": "30"
+	      }
+	    },
+	    "rdsAsg": {
+	      "Type": "AWS::EC2::SecurityGroup",
+	      "Properties": {
+		"GroupDescription": "rdsAsg"
+	      }
+	    },
+	    "rdsBsg": {
+	      "Type": "AWS::EC2::SecurityGroup",
+	      "Properties": {
+		"GroupDescription": "rdsBsg"
+	      }
+	    },
+	    "ebAsg": {
+	      "Type": "AWS::EC2::SecurityGroup",
+	      "Properties": {
+		"GroupDescription": "ebAsg"
+	      }
+	    },
+	    "ebBsg": {
+	      "Type": "AWS::EC2::SecurityGroup",
+	      "Properties": {
+		"GroupDescription": "ebBsg"
+	      }
+	    },
+	    "ingress37": {
+	      "Type": "AWS::EC2::SecurityGroupIngress",
+	      "Properties": {
+		"GroupId": {
+		  "Fn::GetAtt" : ["rdsAsg", "GroupId" ]},
+		"IpProtocol": "tcp",
+		"FromPort": "3306",
+		"ToPort": "3306",
+		"SourceSecurityGroupId": { "Fn::GetAtt" : [ "ebAsg", "GroupId" ] }
+	      }
+	    },
+	    "ingress38": {
+	      "Type": "AWS::EC2::SecurityGroupIngress",
+	      "Properties": {
+		"GroupId": 
+		  { "Fn::GetAtt" : [ "rdsBsg", "GroupId" ] },
+		"IpProtocol": "tcp",
+		"FromPort": "3306",
+		"ToPort": "3306",
+		"SourceSecurityGroupId": { "Fn::GetAtt" : [ "ebBsg", "GroupId" ] }
+	      }
+	    }
+	  },
+	  "Description": "app-A + app-B in EB"
+	}
